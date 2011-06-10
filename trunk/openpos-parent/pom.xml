@@ -16,7 +16,7 @@
 		<module>../openpos-data</module>
 		<module>../openpos-pos</module>
 		<module>../openpos-erp</module>
-		<module>../openpos-cafe</module>
+		<module>../openpos-commands</module>
 		<module>../openpos-print</module>
 		<module>../openpos-launcher</module>
 	</modules>

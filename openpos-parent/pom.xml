@@ -38,14 +38,15 @@
 
 	<repositories>
 		<repository>
-			<id>maven.sbs</id>
-			<name>Repository Name</name>
-			<url>http://maven.sbs/</url>
+			<id>maven@googlecode</id>
+			<name>Internal Maven Repo for missing artifacts</name>
+			<url>http://openpos.googlecode.com/svn/maven-repo/</url>
 		</repository>
 	</repositories>
 
 	<scm>
-		<developerConnection>scm:svn:svn://alpha.sbs/pcp/applications/openpos/trunk</developerConnection>
+		<developerConnection>scm:svn:https://openpos.googlecode.com/svn/trunk/</developerConnection>
+		<connection>http://openpos.googlecode.com/svn/trunk/</connection>
 	</scm>
 
 	<build>

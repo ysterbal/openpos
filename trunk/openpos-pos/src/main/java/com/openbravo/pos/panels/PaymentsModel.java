@@ -393,7 +393,7 @@ public class PaymentsModel {
 		}
 
 		public Double getNetValue() {
-			return (m_SalesTaxes / (taxRate * 100)) * (taxRate + 1) * 100;
+			return (m_SalesTaxes / (taxRate * 100)) * 100;
 		}
 
 		public String getTaxName() {

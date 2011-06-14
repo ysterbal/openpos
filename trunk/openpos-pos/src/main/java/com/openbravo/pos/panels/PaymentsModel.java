@@ -62,7 +62,7 @@ public class PaymentsModel {
 	private Double m_dSalesTaxes;
 	private java.util.List<SalesLine> m_lsales;
 
-	private final static String[] SALEHEADERS = { "label.taxcash", "label.totalcash" };
+	private final static String[] SALEHEADERS = { "label.taxcash", "label.totalcash", "label.totalnet" };
 
 	private PaymentsModel() {
 	}
@@ -241,7 +241,7 @@ public class PaymentsModel {
 
 		List<SalesLine> asales = new StaticSentence(
 				session,
-				"SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT) "
+				"SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT), TAXES.RATE "
 						+ "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID "
 						+ "AND RECEIPTS.MONEY = ?" + " GROUP BY TAXCATEGORIES.NAME", SerializerWriteString.INSTANCE,
 				new SerializerReadClass(PaymentsModel.SalesLine.class)).list(activeCashIndex);
@@ -371,11 +371,13 @@ public class PaymentsModel {
 
 		private String m_SalesTaxName;
 		private Double m_SalesTaxes;
+		private Double taxRate;
 
 		@Override
 		public void readValues(DataRead dr) throws BasicException {
 			m_SalesTaxName = dr.getString(1);
 			m_SalesTaxes = dr.getDouble(2);
+			taxRate = dr.getDouble(3);
 		}
 
 		public String printTaxName() {
@@ -386,6 +388,14 @@ public class PaymentsModel {
 			return Formats.CURRENCY.formatValue(m_SalesTaxes);
 		}
 
+		public String printNetValue() {
+			return Formats.CURRENCY.formatValue(getNetValue());
+		}
+
+		public Double getNetValue() {
+			return (m_SalesTaxes / (taxRate * 100)) * (taxRate + 1) * 100;
+		}
+
 		public String getTaxName() {
 			return m_SalesTaxName;
 		}
@@ -393,6 +403,7 @@ public class PaymentsModel {
 		public Double getTaxes() {
 			return m_SalesTaxes;
 		}
+
 	}
 
 	public AbstractTableModel getSalesModel() {
@@ -421,6 +432,8 @@ public class PaymentsModel {
 						return l.getTaxName();
 					case 1:
 						return l.getTaxes();
+					case 2:
+						return l.getNetValue();
 					default:
 						return null;
 				}

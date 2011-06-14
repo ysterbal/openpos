@@ -171,10 +171,12 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 		m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
 
 		jColumns = m_jsalestable.getColumnModel();
-		jColumns.getColumn(0).setPreferredWidth(200);
+		jColumns.getColumn(0).setPreferredWidth(100);
 		jColumns.getColumn(0).setResizable(false);
 		jColumns.getColumn(1).setPreferredWidth(100);
 		jColumns.getColumn(1).setResizable(false);
+		jColumns.getColumn(2).setPreferredWidth(100);
+		jColumns.getColumn(2).setResizable(false);
 	}
 
 	private void printPayments(String report) {

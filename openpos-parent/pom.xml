@@ -62,6 +62,7 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<releaseProfiles>commands</releaseProfiles>
 						<developmentVersion>2.4-SNAPSHOT</developmentVersion>
+						<useReleaseProfile>false</useReleaseProfile>
 						<goals>install</goals>
 					</configuration>
 				</plugin>

@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openpos</groupId>
 	<name>openPos</name>
-	<version>2.4.M1</version>
+	<version>2.4-SNAPSHOT</version>
 	<artifactId>openpos-parent</artifactId>
 	<packaging>pom</packaging>
 	<properties>
@@ -46,8 +46,8 @@
 	</repositories>
 
 	<scm>
-		<developerConnection>scm:svn:https://openpos.googlecode.com/svn/tags/openpos-parent-2.4.M1/trunk</developerConnection>
-		<connection>http://openpos.googlecode.com/svn/tags/openpos-parent-2.4.M1/trunk</connection>
+		<developerConnection>scm:svn:https://openpos.googlecode.com/svn/trunk/</developerConnection>
+		<connection>http://openpos.googlecode.com/svn/trunk/</connection>
 	</scm>
 
 	<build>

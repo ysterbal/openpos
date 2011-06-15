@@ -60,6 +60,7 @@
 					<configuration>
 						<allowTimestampedSnapshots>false</allowTimestampedSnapshots>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<releaseProfiles>commands</releaseProfiles>
 					</configuration>
 				</plugin>
 			</plugins>

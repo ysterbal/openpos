@@ -52,6 +52,10 @@ public class StartPOS implements Runnable {
 	@Override
 	public void run() {
 
+		if (!registerApp()) {
+			System.exit(1);
+		}
+
 		AppConfig config = new AppConfig(args);
 		config.load();
 
@@ -100,11 +104,6 @@ public class StartPOS implements Runnable {
 	}
 
 	public static void main(final String args[]) {
-
-		if (!registerApp()) {
-			System.exit(1);
-		}
-
 		EventQueue.invokeLater(new StartPOS(args));
 	}
 }

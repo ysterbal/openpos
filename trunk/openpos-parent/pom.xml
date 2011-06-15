@@ -46,8 +46,8 @@
 	</repositories>
 
 	<scm>
-		<developerConnection>scm:svn:https://openpos.googlecode.com/svn/trunk/</developerConnection>
-		<connection>http://openpos.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://openpos.googlecode.com/svn/trunk/openpos-parent</developerConnection>
+		<connection>http://openpos.googlecode.com/svn/trunk/openpos-parent</connection>
 	</scm>
 
 	<build>

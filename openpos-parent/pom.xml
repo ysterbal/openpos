@@ -61,6 +61,8 @@
 						<allowTimestampedSnapshots>false</allowTimestampedSnapshots>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<releaseProfiles>commands</releaseProfiles>
+						<developmentVersion>2.4-SNAPSHOT</developmentVersion>
+						<goals>install</goals>
 					</configuration>
 				</plugin>
 			</plugins>

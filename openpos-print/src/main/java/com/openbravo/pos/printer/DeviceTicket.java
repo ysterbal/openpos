@@ -32,6 +32,8 @@ import java.awt.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openpos.SimpleAppContext;
+
 public class DeviceTicket {
 
     private static Logger logger = Logger.getLogger("com.openbravo.pos.printer.DeviceTicket");
@@ -61,7 +63,7 @@ public class DeviceTicket {
 
     public DeviceTicket(Component parent, AppProperties props) {
 
-        PrinterWritterPool pws = new PrinterWritterPool();
+        PrinterWriterFactory pws = new SimpleAppContext(props).getBean("printer.writer.factory", PrinterWritterPool.class);
 
         // La impresora fiscal
         StringParser sf = new StringParser(props.getProperty("machine.fiscalprinter"));
@@ -96,11 +98,11 @@ public class DeviceTicket {
             } else if ("window".equals(sDisplayType)) {
                 m_devicedisplay = new DeviceDisplayWindow();
             } else if ("epson".equals(sDisplayType)) {
-                m_devicedisplay = new DeviceDisplayESCPOS(pws.getPrinterWritter(sDisplayParam1, sDisplayParam2), new UnicodeTranslatorInt());
+                m_devicedisplay = new DeviceDisplayESCPOS(pws.getPrinterWriter(sDisplayParam1, sDisplayParam2), new UnicodeTranslatorInt());
             } else if ("surepos".equals(sDisplayType)) {
-                m_devicedisplay = new DeviceDisplaySurePOS(pws.getPrinterWritter(sDisplayParam1, sDisplayParam2));
+                m_devicedisplay = new DeviceDisplaySurePOS(pws.getPrinterWriter(sDisplayParam1, sDisplayParam2));
             } else if ("ld200".equals(sDisplayType)) {
-                m_devicedisplay = new DeviceDisplayESCPOS(pws.getPrinterWritter(sDisplayParam1, sDisplayParam2), new UnicodeTranslatorEur());
+                m_devicedisplay = new DeviceDisplayESCPOS(pws.getPrinterWriter(sDisplayParam1, sDisplayParam2), new UnicodeTranslatorEur());
             } else if ("javapos".equals(sDisplayType)) {
                 m_devicedisplay = new DeviceDisplayJavaPOS(sDisplayParam1);
             } else {
@@ -154,17 +156,17 @@ public class DeviceTicket {
                             props.getProperty("paper." + sPrinterParam2 + ".mediasizename")
                             ));
                 } else if ("epson".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2), new CodesEpson(), new UnicodeTranslatorInt()));
+                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2), new CodesEpson(), new UnicodeTranslatorInt()));
                 } else if ("tmu220".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2), new CodesTMU220(), new UnicodeTranslatorInt()));
+                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2), new CodesTMU220(), new UnicodeTranslatorInt()));
                 } else if ("star".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2), new CodesStar(), new UnicodeTranslatorStar()));
+                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2), new CodesStar(), new UnicodeTranslatorStar()));
                 } else if ("ithaca".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2), new CodesIthaca(), new UnicodeTranslatorInt()));
+                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2), new CodesIthaca(), new UnicodeTranslatorInt()));
                 } else if ("surepos".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2), new CodesSurePOS(), new UnicodeTranslatorSurePOS()));
+                    addPrinter(sPrinterIndex, new DevicePrinterESCPOS(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2), new CodesSurePOS(), new UnicodeTranslatorSurePOS()));
                 } else if ("plain".equals(sPrinterType)) {
-                    addPrinter(sPrinterIndex, new DevicePrinterPlain(pws.getPrinterWritter(sPrinterParam1, sPrinterParam2)));
+                    addPrinter(sPrinterIndex, new DevicePrinterPlain(pws.getPrinterWriter(sPrinterParam1, sPrinterParam2)));
                 } else if ("javapos".equals(sPrinterType)) {
                     addPrinter(sPrinterIndex, new DevicePrinterJavaPOS(sPrinterParam1, sPrinterParam2));
                 }
@@ -184,28 +186,6 @@ public class DeviceTicket {
         m_deviceprinterslist.add(p);
     }
 
-    private static class PrinterWritterPool {
-
-        private Map<String, PrinterWritter> m_apool = new HashMap<String, PrinterWritter>();
-
-        public PrinterWritter getPrinterWritter(String con, String port) throws TicketPrinterException {
-
-            String skey = con + "-->" + port;
-            PrinterWritter pw = (PrinterWritter) m_apool.get(skey);
-            if (pw == null) {
-                if ("serial".equals(con) || "rxtx".equals(con)) {
-                    pw = new PrinterWritterRXTX(port);
-                    m_apool.put(skey, pw);
-                } else if ("file".equals(con)) {
-                    pw = new PrinterWritterFile(port);
-                    m_apool.put(skey, pw);
-                } else {
-                    throw new TicketPrinterException();
-                }
-            }
-            return pw;
-        }
-    }
     // Impresora fiscal
     public DeviceFiscalPrinter getFiscalPrinter() {
         return m_deviceFiscal;

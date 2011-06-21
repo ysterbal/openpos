@@ -3,12 +3,16 @@ package org.openpos;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.openbravo.pos.forms.AppProperties;
+
 public class SimpleAppContext implements AppContext {
 
 	private static final String DEFAULT_BEAN = "--DEFAULT_BEAN--";
 	private Map<String, Object> classToObjectMap = new HashMap<String, Object>();
+	private AppProperties appProperties;
 
-	public SimpleAppContext() {
+	public SimpleAppContext(AppProperties appProperties) {
+		this.appProperties = appProperties;
 	}
 
 	public SimpleAppContext(Object... objects) {
@@ -55,4 +59,19 @@ public class SimpleAppContext implements AppContext {
 		return bean;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getBean(String propertyName, Class<T> knownAlternative) {
+		try {
+			if (appProperties != null && appProperties.getProperty(propertyName) != null) {
+				String className = appProperties.getProperty(propertyName);
+				return (T)Class.forName(className).newInstance();
+			}
+			else
+				return knownAlternative.newInstance();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

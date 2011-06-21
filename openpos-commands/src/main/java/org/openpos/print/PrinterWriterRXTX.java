@@ -14,9 +14,6 @@ import com.openbravo.pos.printer.escpos.PrinterWritter;
 
 public class PrinterWriterRXTX extends PrinterWritter {
 
-	private static final Integer ACTION_FLUSH = new Integer(0);
-	private static final Integer ACTION_CLOSE = new Integer(1);
-
 	private boolean initialized = false;
 	private ByteArrayOutputStream baos = new ByteArrayOutputStream(100 * 1024);
 
@@ -41,7 +38,7 @@ public class PrinterWriterRXTX extends PrinterWritter {
 				m_out = m_CommPortPrinter.getOutputStream(); // Tomamos el chorro de escritura   
 
 				if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-					((SerialPort)m_CommPortPrinter).setSerialPortParams(9600, SerialPort.DATABITS_8,
+					((SerialPort)m_CommPortPrinter).setSerialPortParams(115200, SerialPort.DATABITS_8,
 							SerialPort.STOPBITS_1, SerialPort.PARITY_NONE); // Configuramos el puerto
 				}
 				else if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_PARALLEL) {

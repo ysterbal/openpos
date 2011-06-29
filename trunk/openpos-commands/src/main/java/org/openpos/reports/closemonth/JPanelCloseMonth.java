@@ -22,7 +22,6 @@ package org.openpos.reports.closemonth;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.swing.ComboBoxModel;
@@ -35,6 +34,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+
+import org.openpos.utils.DateTimeUtils;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.MessageInf;
@@ -711,7 +712,7 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 		currentMonth = c.get(Calendar.MONTH);
 		currentYear = c.get(Calendar.YEAR);
 
-		JComboBox monthSelection = createMonthComboBox(c);
+		JComboBox monthSelection = createMonthComboBox();
 		JComboBox yearSelection = createYearComboBox();
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -722,10 +723,7 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 	}
 
 	private JComboBox createYearComboBox() {
-		final String[] years = new String[Calendar.getInstance().get(Calendar.YEAR) - BASE_YEAR + 1];
-		for (int y = 0; y < years.length; y++) {
-			years[y] = String.valueOf(BASE_YEAR + y);
-		}
+		final String[] years = DateTimeUtils.createYearsArray(BASE_YEAR);
 
 		JComboBox yearSelection = new JComboBox(years);
 		yearSelection.setSelectedIndex(currentYear - BASE_YEAR);
@@ -744,14 +742,8 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 		return yearSelection;
 	}
 
-	private JComboBox createMonthComboBox(Calendar c) {
-		final String[] months = new String[12];
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM");
-
-		for (int month = 0; month < months.length; month++) {
-			c.set(currentYear, month, 1);
-			months[month] = sdf.format(c.getTime());
-		}
+	private JComboBox createMonthComboBox() {
+		final String[] months = DateTimeUtils.createMonthArray();
 
 		JComboBox monthSelection = new JComboBox(months);
 		monthSelection.setSelectedIndex(currentMonth);

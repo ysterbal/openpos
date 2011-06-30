@@ -1,5 +1,6 @@
 package org.openpos.utils;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -23,6 +24,36 @@ public class DateTimeUtils {
 			months[month] = sdf.format(c.getTime());
 		}
 		return months;
+	}
+
+	public static String[] createDayArray() {
+		String[] days = new String[31];
+		for (int x = 0; x < days.length; x++) {
+			days[x] = String.valueOf(x + 1);
+		}
+		return days;
+	}
+
+	public static String formatTime(int hour, int minute) {
+		DecimalFormat zeroDf = new DecimalFormat("00");
+		return zeroDf.format(hour) + ":" + zeroDf.format(minute);
+	}
+
+	public static String formatTime(int time) {
+		return formatTime(time / 60, time % 60);
+	}
+
+	public static int calcWorkingTime(int commingTime, int leavingTime, int pauseDuration) {
+		int workingTime = 0;
+
+		if (leavingTime - commingTime >= 0) {
+			workingTime += leavingTime - commingTime;
+		}
+		else {
+			workingTime += (24 * 60 - commingTime) + leavingTime;
+		}
+
+		return workingTime - pauseDuration;
 	}
 
 }

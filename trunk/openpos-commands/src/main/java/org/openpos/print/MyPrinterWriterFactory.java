@@ -16,6 +16,11 @@ public class MyPrinterWriterFactory extends PrinterWritterPool {
 				printerWriterRXTX = new PrinterWriterRXTX(port);
 			return printerWriterRXTX;
 		}
+		else if ("flushlessserial".equals(con)) {
+			if (printerWriterRXTX == null)
+				printerWriterRXTX = new FlushLessPrinterWriterRXTX(port);
+			return printerWriterRXTX;
+		}
 		else
 			return super.getPrinterWriter(con, port);
 	}

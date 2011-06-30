@@ -53,14 +53,14 @@ public class PrinterWriterRXTX extends PrinterWritter {
 	}
 
 	protected void daemonFlush() {
-		try {
-			if (m_out != null) {
-				m_out.flush();
-			}
-		}
-		catch (IOException e) {
-			System.err.println(e);
-		}
+		//		try {
+		//			if (m_out != null) {
+		//				m_out.flush();
+		//			}
+		//		}
+		//		catch (IOException e) {
+		//			System.err.println(e);
+		//		}
 	}
 
 	protected void daemonClose() {

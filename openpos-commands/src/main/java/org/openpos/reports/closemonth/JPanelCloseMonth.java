@@ -54,10 +54,6 @@ import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 
-/**
- * 
- * @author adrianromero
- */
 public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryApp {
 
 	private static final int BASE_YEAR = 2008;

@@ -4,16 +4,17 @@ import java.util.Calendar;
 
 public class TimeRecordingModel {
 
-	private Employee employee;
+	private String employeeName;
 	private int commingTime;
 	private int leavingTime;
 	private int pauseDuration;
 	private Calendar date = Calendar.getInstance();
 
 	private int workingTime;
+	private int earningsInCents;
 
 	public boolean isValid() {
-		return employee != null && workingTime != 0;
+		return employeeName != null && workingTime != 0;
 	}
 
 	public int getCommingTime() {
@@ -56,12 +57,19 @@ public class TimeRecordingModel {
 		this.workingTime = workingTime;
 	}
 
-	public Employee getEmployee() {
-		return employee;
+	public String getEmployeeName() {
+		return employeeName;
 	}
 
-	public void setEmployee(Employee employee) {
-		this.employee = employee;
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
 	}
 
+	public int getEarningsInCents() {
+		return earningsInCents;
+	}
+
+	public void setEarningsInCents(int earningsInCents) {
+		this.earningsInCents = earningsInCents;
+	}
 }

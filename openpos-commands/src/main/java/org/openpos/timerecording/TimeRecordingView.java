@@ -6,8 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 
+import org.openpos.OpenPos;
 import org.openpos.print.ReportPrintService;
 import org.openpos.reports.closemonth.EmptyListDataListener;
 import org.openpos.timerecording.DateSelectorComponent.DateChangedListener;
+import org.openpos.timerecording.dao.TimeRecordingInsert;
 import org.openpos.ui.components.TimeKeeper;
 import org.openpos.ui.components.TimeSelectorComponent;
 import org.openpos.ui.components.TimeSelectorComponent.TimeChangedListener;
@@ -45,6 +45,7 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 
 	private String[] employeeNames;
 	private List<Employee> employees;
+	private Employee selectedEmployee;
 	private JButton printAndSaveButton;
 	private ReportPrintService reportPrintService;
 
@@ -252,22 +253,33 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 
 			@Override
 			public void contentsChanged(ListDataEvent e) {
-				Employee employee = TimeRecordingView.this.employees.get(employeeSelector.getSelectedIndex());
-				timeRecordingModel.setEmployee(employee);
+				setSelectedEmployee(TimeRecordingView.this.employees.get(employeeSelector.getSelectedIndex()));
 			}
 		});
 		employeeSelector.setModel(comboBoxModel);
-		timeRecordingModel.setEmployee(employees.get(0));
+		setSelectedEmployee(employees.get(0));
+	}
+
+	public void setSelectedEmployee(Employee selectedEmployee) {
+		this.selectedEmployee = selectedEmployee;
+		timeRecordingModel.setEmployeeName(selectedEmployee.getName());
 	}
 
 	public void setReportPrintService(ReportPrintService reportPrintService) {
 		this.reportPrintService = reportPrintService;
 	}
 
+	private void saveTimeRecording() {
+		TimeRecordingInsert timeRecordingInsert = OpenPos.getApplicationContext().getBean(TimeRecordingInsert.class);
+		timeRecordingInsert.insert(timeRecordingModel);
+	}
+
 	private void printAndSave() {
 		if (timeRecordingModel.isValid()) {
+			updateEarnings();
+			saveTimeRecording();
 			Map<String, Object> env = new HashMap<String, Object>();
-			env.put("trm", createFormattedModel());
+			env.put("trm", new TimeRecordingModelFormatter().formatModel(timeRecordingModel));
 			reportPrintService.print(env);
 			MessageInf msg = new MessageInf(MessageInf.SGN_SUCCESS, "OK");
 			msg.show(this);
@@ -279,21 +291,9 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 		}
 	}
 
-	private FormattedTimeRecordingModel createFormattedModel() {
-		DateFormat sdf = DateFormat.getDateInstance(DateFormat.MEDIUM);
-		DecimalFormat df = new DecimalFormat("#,##0.00");
-		FormattedTimeRecordingModel model = new FormattedTimeRecordingModel();
-		model.setEmployeeName(timeRecordingModel.getEmployee().getName());
-		model.setCommingTime(DateTimeUtils.formatTime(timeRecordingModel.getCommingTime()));
-		model.setLeavingTime(DateTimeUtils.formatTime(timeRecordingModel.getLeavingTime()));
-		model.setPauseDuration(DateTimeUtils.formatTime(timeRecordingModel.getPauseDuration()));
-		model.setWorkingTime(DateTimeUtils.formatTime(timeRecordingModel.getWorkingTime()));
-		model.setDate(sdf.format(timeRecordingModel.getDate().getTime()));
+	private void updateEarnings() {
+		double earnings = (double)timeRecordingModel.getWorkingTime() * ((double)selectedEmployee.getWageRate() / 60.0);
 
-		double earnings = (double)timeRecordingModel.getWorkingTime()
-				* ((double)timeRecordingModel.getEmployee().getWageRate() / 60.0);
-
-		model.setEarnings(df.format(earnings));
-		return model;
+		timeRecordingModel.setEarningsInCents((int)Math.round(earnings * 100));
 	}
 }

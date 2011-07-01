@@ -1,4 +1,4 @@
-package org.openpos.timerecording;
+package org.openpos.timerecording.report;
 
 import java.awt.FlowLayout;
 
@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.openpos.print.ReportPrintService;
+import org.openpos.timerecording.TimeRecordingResources;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.AppView;
@@ -13,9 +14,9 @@ import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.JPanelView;
 
-public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
+public class TimeRecordingReportPanel implements JPanelView, BeanFactoryApp {
 
-	private TimeRecordingView timeRecordingView = new TimeRecordingView();
+	private TimeRecordingReportView timeRecordingReportView = new TimeRecordingReportView();
 
 	@Override
 	public Object getBean() {
@@ -25,14 +26,14 @@ public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 	@Override
 	public void init(AppView app) throws BeanFactoryException {
 		TimeRecordingResources resources = new TimeRecordingResources(app);
-		timeRecordingView.setEmployees(resources.getEmployeeDataBase().getEmployees());
-		timeRecordingView.setReportPrintService(new ReportPrintService(resources.getTicketParser(), timeRecordingView,
-				resources.getEmployeeDailyReport()));
+		timeRecordingReportView.setEmployees(resources.getEmployeeDataBase().getEmployees());
+		timeRecordingReportView.setReportPrintService(new ReportPrintService(resources.getTicketParser(),
+				timeRecordingReportView, resources.getEmployeeMonthlyReport()));
 	}
 
 	@Override
 	public String getTitle() {
-		return "Zeiterfassung";
+		return "Lohnabrechnung";
 	}
 
 	@Override
@@ -47,7 +48,8 @@ public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 	@Override
 	public JComponent getComponent() {
 		JPanel panel = new JPanel(new FlowLayout());
-		panel.add(timeRecordingView);
+		panel.add(timeRecordingReportView);
 		return panel;
 	}
+
 }

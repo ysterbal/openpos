@@ -137,7 +137,7 @@ public class JRootApp extends JPanel implements AppView, OnStatusChangedNotifier
 
 		// Create or upgrade the database if database version is not the expected
 		String sDBVersion = readDataBaseVersion();
-		if (!AppLocal.APP_VERSION.equals(sDBVersion)) {
+		if (!AppLocal.DB_VERSION.equals(sDBVersion)) {
 
 			// Create or upgrade database
 
@@ -161,10 +161,11 @@ public class JRootApp extends JPanel implements AppView, OnStatusChangedNotifier
 								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 
 					try {
+						session.begin();
 						BatchSentence bsentence = new BatchSentenceResource(session, sScript);
 						bsentence.putParameter("APP_ID", Matcher.quoteReplacement(AppLocal.APP_ID));
 						bsentence.putParameter("APP_NAME", Matcher.quoteReplacement(AppLocal.APP_NAME));
-						bsentence.putParameter("APP_VERSION", Matcher.quoteReplacement(AppLocal.APP_VERSION));
+						bsentence.putParameter("APP_VERSION", Matcher.quoteReplacement(AppLocal.DB_VERSION));
 
 						java.util.List l = bsentence.list();
 						if (l.size() > 0) {
@@ -175,6 +176,8 @@ public class JRootApp extends JPanel implements AppView, OnStatusChangedNotifier
 													.getIntString("Database.ScriptWarning"), l.toArray(new Throwable[l
 													.size()])));
 						}
+						else 
+							session.commit();
 					}
 					catch (BasicException e) {
 						JMessageDialog
@@ -182,6 +185,10 @@ public class JRootApp extends JPanel implements AppView, OnStatusChangedNotifier
 										this,
 										new MessageInf(MessageInf.SGN_DANGER, AppLocal
 												.getIntString("Database.ScriptError"), e));
+						session.close();
+						return false;
+					}
+					catch (SQLException e) {
 						session.close();
 						return false;
 					}

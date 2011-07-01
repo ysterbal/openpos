@@ -44,6 +44,15 @@
 			<name>Internal Maven Repo for missing artifacts</name>
 			<url>http://openpos.googlecode.com/svn/maven-repo/</url>
 		</repository>
+		<!-- For developing against latest Spring milestones -->
+		<repository>
+			<id>org.springframework.maven.milestone</id>
+			<name>Spring Maven Milestone Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<scm>

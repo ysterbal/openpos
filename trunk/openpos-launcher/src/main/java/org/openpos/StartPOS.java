@@ -1,6 +1,5 @@
 package org.openpos;
 
-import java.awt.EventQueue;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +9,7 @@ import javax.swing.UIManager;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.openbravo.format.Formats;
@@ -23,13 +23,10 @@ public class StartPOS implements Runnable {
 
 	private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.StartPOS");
 
-	private String[] args;
+	@Autowired
+	private AppConfig config;
 
 	public StartPOS() {
-	}
-
-	public StartPOS(String[] args) {
-		this.args = args;
 	}
 
 	public static boolean registerApp() {
@@ -45,19 +42,12 @@ public class StartPOS implements Runnable {
 		}
 	}
 
-	public void setArgs(String[] args) {
-		this.args = args;
-	}
-
 	@Override
 	public void run() {
 
 		if (!registerApp()) {
 			System.exit(1);
 		}
-
-		AppConfig config = new AppConfig(args);
-		config.load();
 
 		// set Locale.
 		String slang = config.getProperty("user.language");
@@ -101,9 +91,5 @@ public class StartPOS implements Runnable {
 			JRootFrame rootframe = new JRootFrame();
 			rootframe.initFrame(config);
 		}
-	}
-
-	public static void main(final String args[]) {
-		EventQueue.invokeLater(new StartPOS(args));
 	}
 }

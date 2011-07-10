@@ -37,6 +37,7 @@ public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 
 	@Override
 	public void activate() throws BasicException {
+		timeRecordingView.resetFields();
 	}
 
 	@Override

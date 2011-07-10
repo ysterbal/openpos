@@ -194,9 +194,17 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 		initFields();
 	}
 
+	public void resetFields() {
+		timeRecordingModel = new TimeRecordingModel();
+		initFields();
+		if (employees != null && !employees.isEmpty()) {
+			employeeSelector.setSelectedIndex(0);
+			setSelectedEmployee(employees.get(0));
+		}
+	}
+
 	private void initFields() {
-		Calendar now = Calendar.getInstance();
-		int minutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+		int minutes = getCurrentMinutes();
 		if (timeRecordingModel.getCommingTime() == 0)
 			timeRecordingModel.setCommingTime(minutes);
 
@@ -209,6 +217,12 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 
 		dateSelectorComponent.setCurrentDate(timeRecordingModel.getDate());
 		updateWorkingTime();
+	}
+
+	private int getCurrentMinutes() {
+		Calendar now = Calendar.getInstance();
+		int minutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+		return minutes;
 	}
 
 	@Override
@@ -281,9 +295,6 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 			Map<String, Object> env = new HashMap<String, Object>();
 			env.put("trm", new TimeRecordingModelFormatter().formatModel(timeRecordingModel));
 			reportPrintService.print(env);
-			MessageInf msg = new MessageInf(MessageInf.SGN_SUCCESS, "OK");
-			msg.show(this);
-
 		}
 		else {
 			MessageInf msg = new MessageInf(MessageInf.CLS_GENERIC, "Daten unvollständig");

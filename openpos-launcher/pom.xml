@@ -7,9 +7,7 @@
 		<version>2.4-SNAPSHOT</version>
 		<relativePath>../openpos-parent</relativePath>
 	</parent>
-	<groupId>org.openpos</groupId>
 	<artifactId>openpos-launcher</artifactId>
-	<version>2.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<profiles>
 		<profile>
@@ -40,7 +38,6 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>

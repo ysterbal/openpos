@@ -151,8 +151,8 @@ public class TimeRecordingReportView extends JPanel {
 		TimeRecordingSelect timeRecordingSelect = OpenPos.getApplicationContext().getBean(TimeRecordingSelect.class);
 
 		for (Employee employee : employees) {
-			List<TimeRecordingModel> list = timeRecordingSelect.execute(employee.getName(), fromDate.getTime(),
-					toDate.getTime());
+			List<TimeRecordingModel> list = timeRecordingSelect.findTimeRecording(employee.getName(),
+					fromDate.getTime(), toDate.getTime());
 			if (!list.isEmpty()) {
 				result.put(employee.getName(), list);
 			}

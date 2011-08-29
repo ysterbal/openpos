@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
@@ -24,7 +26,7 @@ import org.openpos.OpenPos;
 import org.openpos.print.ReportPrintService;
 import org.openpos.reports.closemonth.EmptyListDataListener;
 import org.openpos.timerecording.DateSelectorComponent.DateChangedListener;
-import org.openpos.timerecording.dao.TimeRecordingInsert;
+import org.openpos.timerecording.dao.DaoManager;
 import org.openpos.ui.components.TimeKeeper;
 import org.openpos.ui.components.TimeSelectorComponent;
 import org.openpos.ui.components.TimeSelectorComponent.TimeChangedListener;
@@ -49,7 +51,11 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 	private JButton printAndSaveButton;
 	private ReportPrintService reportPrintService;
 
+	private DaoManager daoManager;
+
 	public TimeRecordingView() {
+		this.daoManager = OpenPos.getApplicationContext().getBean(DaoManager.class);
+
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 200, 277, 0 };
 		gridBagLayout.rowHeights = new int[] { 51, 51, 51, 51, 51, 51, 51, 0 };
@@ -284,14 +290,34 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 	}
 
 	private void saveTimeRecording() {
-		TimeRecordingInsert timeRecordingInsert = OpenPos.getApplicationContext().getBean(TimeRecordingInsert.class);
-		timeRecordingInsert.insert(timeRecordingModel);
+		daoManager.insertTimeRecording(timeRecordingModel);
+	}
+
+	private void updateTimeRecording() {
+		daoManager.updateTimeRecording(timeRecordingModel);
+	}
+
+	private boolean previousEntryExists() {
+		Date date = timeRecordingModel.getDate().getTime();
+		return !daoManager.selectTimeRecordingModel(timeRecordingModel.getEmployeeName(), date, date).isEmpty();
 	}
 
 	private void printAndSave() {
 		if (timeRecordingModel.isValid()) {
 			updateEarnings();
-			saveTimeRecording();
+			if (previousEntryExists()) {
+				int result = JOptionPane.showConfirmDialog(this,
+						"Es existieren bereits Zeiterfassungsdaten für diesen Tag.\n"
+								+ "Sollen die vorherigen Daten überschieben werden?", "Zeiterfassung",
+						JOptionPane.OK_CANCEL_OPTION);
+
+				if (result == JOptionPane.CANCEL_OPTION)
+					return;
+				updateTimeRecording();
+			}
+			else {
+				saveTimeRecording();
+			}
 			Map<String, Object> env = new HashMap<String, Object>();
 			env.put("trm", new TimeRecordingModelFormatter().formatModel(timeRecordingModel));
 			reportPrintService.print(env);

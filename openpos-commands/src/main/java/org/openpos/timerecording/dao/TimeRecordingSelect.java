@@ -3,6 +3,8 @@ package org.openpos.timerecording.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Date;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -37,6 +39,10 @@ public class TimeRecordingSelect extends MappingSqlQuery<TimeRecordingModel> {
 		model.setWorkingTime(rs.getInt(c++));
 		model.setEarningsInCents(rs.getInt(c++));
 		return model;
+	}
+
+	public List<TimeRecordingModel> findTimeRecording(String employeeName, Date fromDate, Date toDate) {
+		return execute(employeeName, fromDate, toDate);
 	}
 
 }

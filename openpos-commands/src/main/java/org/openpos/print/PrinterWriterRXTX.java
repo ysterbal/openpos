@@ -37,7 +37,6 @@ public class PrinterWriterRXTX extends PrinterWritter {
 			if (m_out == null) {
 				initPort();
 			}
-			System.out.println("Daemon write...");
 			m_out.write(data);
 		}
 		catch (Exception e) {
@@ -58,12 +57,6 @@ public class PrinterWriterRXTX extends PrinterWritter {
 			((ParallelPort)m_CommPortPrinter).setMode(1);
 		}
 		m_out = m_CommPortPrinter.getOutputStream(); // Tomamos el chorro de escritura   
-
-		try {
-			System.out.println("Outputbuffer Size:" + m_CommPortPrinter.getOutputBufferSize());
-		}
-		catch (Throwable e) {
-		}
 
 	}
 
@@ -98,7 +91,6 @@ public class PrinterWriterRXTX extends PrinterWritter {
 
 	private void localWrite(byte[] data) {
 		try {
-			System.out.println("local write...");
 			baos.write(data);
 		}
 		catch (IOException e) {

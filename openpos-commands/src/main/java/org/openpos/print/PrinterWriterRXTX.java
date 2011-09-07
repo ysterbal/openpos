@@ -126,6 +126,7 @@ public class PrinterWriterRXTX extends PrinterWritter {
 		daemonWrite(baos.toByteArray());
 		daemonFlush();
 		baos.reset();
+		close();
 	}
 
 	@Override

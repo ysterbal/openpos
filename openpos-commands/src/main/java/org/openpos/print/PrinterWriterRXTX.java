@@ -2,8 +2,11 @@ package org.openpos.print;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
 import gnu.io.ParallelPort;
+import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,24 +35,36 @@ public class PrinterWriterRXTX extends PrinterWritter {
 	protected void daemonWrite(byte[] data) {
 		try {
 			if (m_out == null) {
-				m_PortIdPrinter = CommPortIdentifier.getPortIdentifier(m_sPortPrinter); // Tomamos el puerto                   
-				m_CommPortPrinter = m_PortIdPrinter.open("PORTID", 2000); // Abrimos el puerto       
-
-				m_out = m_CommPortPrinter.getOutputStream(); // Tomamos el chorro de escritura   
-
-				if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-					((SerialPort)m_CommPortPrinter).setSerialPortParams(115200, SerialPort.DATABITS_8,
-							SerialPort.STOPBITS_1, SerialPort.PARITY_NONE); // Configuramos el puerto
-				}
-				else if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_PARALLEL) {
-					((ParallelPort)m_CommPortPrinter).setMode(1);
-				}
+				initPort();
 			}
+			System.out.println("Daemon write...");
 			m_out.write(data);
 		}
 		catch (Exception e) {
 			System.err.println(e);
 		}
+	}
+
+	private void initPort() throws NoSuchPortException, PortInUseException, IOException,
+			UnsupportedCommOperationException {
+		m_PortIdPrinter = CommPortIdentifier.getPortIdentifier(m_sPortPrinter); // Tomamos el puerto                   
+		m_CommPortPrinter = m_PortIdPrinter.open("PORTID", 2000); // Abrimos el puerto       
+
+		if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+			((SerialPort)m_CommPortPrinter).setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE); // Configuramos el puerto
+		}
+		else if (m_PortIdPrinter.getPortType() == CommPortIdentifier.PORT_PARALLEL) {
+			((ParallelPort)m_CommPortPrinter).setMode(1);
+		}
+		m_out = m_CommPortPrinter.getOutputStream(); // Tomamos el chorro de escritura   
+
+		try {
+			System.out.println("Outputbuffer Size:" + m_CommPortPrinter.getOutputBufferSize());
+		}
+		catch (Throwable e) {
+		}
+
 	}
 
 	protected void daemonFlush() {
@@ -80,6 +95,7 @@ public class PrinterWriterRXTX extends PrinterWritter {
 
 	private void localWrite(byte[] data) {
 		try {
+			System.out.println("local write...");
 			baos.write(data);
 		}
 		catch (IOException e) {

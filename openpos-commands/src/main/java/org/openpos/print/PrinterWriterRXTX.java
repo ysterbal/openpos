@@ -83,6 +83,7 @@ public class PrinterWriterRXTX extends PrinterWritter {
 			if (m_out != null) {
 				daemonFlush();
 				m_out.close();
+				m_CommPortPrinter.close();
 			}
 		}
 		catch (IOException e) {

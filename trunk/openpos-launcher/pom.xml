@@ -13,6 +13,16 @@
 		<profile>
 			<id>commands</id>
 			<dependencies>
+				<dependency>
+					<groupId>org.rxtx</groupId>
+					<artifactId>rxtx</artifactId>
+					<version>2.1.7</version>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.poi</groupId>
+					<artifactId>poi</artifactId>
+					<version>3.6</version>
+				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>

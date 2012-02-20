@@ -16,6 +16,7 @@ import com.openbravo.pos.forms.JPanelView;
 public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 
 	private TimeRecordingView timeRecordingView = new TimeRecordingView();
+	private EmployeeListResources employeeListResources;
 
 	@Override
 	public Object getBean() {
@@ -25,7 +26,8 @@ public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 	@Override
 	public void init(AppView app) throws BeanFactoryException {
 		TimeRecordingResources resources = new TimeRecordingResources(app);
-		timeRecordingView.setEmployees(resources.getEmployeeDataBase().getEmployees());
+		employeeListResources = new EmployeeListResources(app);
+		timeRecordingView.setEmployees(employeeListResources.getEmployeeDataBase().getEmployees());
 		timeRecordingView.setReportPrintService(new ReportPrintService(resources.getTicketParser(), timeRecordingView,
 				resources.getEmployeeDailyReport()));
 	}
@@ -37,6 +39,7 @@ public class TimeRecordingPanel implements JPanelView, BeanFactoryApp {
 
 	@Override
 	public void activate() throws BasicException {
+		timeRecordingView.setEmployees(employeeListResources.getUpdatedEmployeeDataBase().getEmployees());
 		timeRecordingView.resetFields();
 	}
 

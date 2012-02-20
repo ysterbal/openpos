@@ -1,27 +1,20 @@
 package org.openpos.timerecording;
 
+import org.openpos.utils.ResourcesHandler;
+
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryException;
-import com.openbravo.pos.forms.IDataLogicSystem;
 import com.openbravo.pos.printer.TicketParser;
 
-public class TimeRecordingResources {
+public class TimeRecordingResources extends ResourcesHandler {
 
 	private TicketParser ticketParser;
 	private String employeeDailyReport;
 	private String employeeMonthlyReport;
-	private EmployeeDataBase employeeDataBase;
 
 	public TimeRecordingResources(AppView app) {
-		IDataLogicSystem dataLogicSystem = (IDataLogicSystem)app.getBean("com.openbravo.pos.forms.DataLogicSystem");
+		super(app);
 		ticketParser = new TicketParser(app.getDeviceTicket(), dataLogicSystem);
-
-		String employeeList = dataLogicSystem.getResourceAsText("Employee.List");
-		if (employeeList != null) {
-			employeeDataBase = EmployeeDataBase.getInstance(employeeList);
-		}
-		else
-			throw new BeanFactoryException("Resource not defined");
 
 		employeeDailyReport = dataLogicSystem.getResourceAsText("Employee.Daily.Report");
 		if (employeeDailyReport == null || employeeDailyReport.isEmpty()) {
@@ -43,10 +36,6 @@ public class TimeRecordingResources {
 
 	public String getEmployeeMonthlyReport() {
 		return employeeMonthlyReport;
-	}
-
-	public EmployeeDataBase getEmployeeDataBase() {
-		return employeeDataBase;
 	}
 
 }

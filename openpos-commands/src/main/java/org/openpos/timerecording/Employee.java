@@ -17,4 +17,13 @@ public class Employee {
 	public double getWageRate() {
 		return wageRate;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setWageRate(double wageRate) {
+		this.wageRate = wageRate;
+	}
+
 }

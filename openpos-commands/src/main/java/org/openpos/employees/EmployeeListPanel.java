@@ -1,13 +1,11 @@
-package org.openpos.timerecording.report;
+package org.openpos.employees;
 
 import java.awt.FlowLayout;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.openpos.print.ReportPrintService;
 import org.openpos.timerecording.EmployeeListResources;
-import org.openpos.timerecording.TimeRecordingResources;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.pos.forms.AppView;
@@ -15,9 +13,9 @@ import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
 import com.openbravo.pos.forms.JPanelView;
 
-public class TimeRecordingReportPanel implements JPanelView, BeanFactoryApp {
+public class EmployeeListPanel implements JPanelView, BeanFactoryApp {
 
-	private TimeRecordingReportView timeRecordingReportView = new TimeRecordingReportView();
+	private EmployeeListView view;
 
 	@Override
 	public Object getBean() {
@@ -26,16 +24,14 @@ public class TimeRecordingReportPanel implements JPanelView, BeanFactoryApp {
 
 	@Override
 	public void init(AppView app) throws BeanFactoryException {
-		TimeRecordingResources resources = new TimeRecordingResources(app);
 		EmployeeListResources employeeListResources = new EmployeeListResources(app);
-		timeRecordingReportView.setEmployees(employeeListResources.getEmployeeDataBase().getEmployees());
-		timeRecordingReportView.setReportPrintService(new ReportPrintService(resources.getTicketParser(),
-				timeRecordingReportView, resources.getEmployeeMonthlyReport()));
+		view = new EmployeeListView(employeeListResources);
+		view.setEmployees(employeeListResources.getEmployeeDataBase().getEmployees());
 	}
 
 	@Override
 	public String getTitle() {
-		return "Lohnabrechnung";
+		return "Mitarbeiterliste";
 	}
 
 	@Override
@@ -50,8 +46,7 @@ public class TimeRecordingReportPanel implements JPanelView, BeanFactoryApp {
 	@Override
 	public JComponent getComponent() {
 		JPanel panel = new JPanel(new FlowLayout());
-		panel.add(timeRecordingReportView);
+		panel.add(view);
 		return panel;
 	}
-
 }

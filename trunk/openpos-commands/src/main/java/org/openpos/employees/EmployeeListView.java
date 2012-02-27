@@ -33,6 +33,7 @@ public class EmployeeListView extends JPanel {
 	private JComboBox employeeSelector;
 	private JTextField nameField;
 	private JTextField wageField;
+	private JTextField pinField;
 
 	private String[] employeeNames;
 	private List<Employee> employees;
@@ -100,26 +101,10 @@ public class EmployeeListView extends JPanel {
 		gbcNameField.gridy = 1;
 		add(nameField, gbcNameField);
 
-		JLabel lblWage = new JLabel("Stundenlohn:");
-		lblWage.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblGekommen = new GridBagConstraints();
-		gbc_lblGekommen.fill = GridBagConstraints.BOTH;
-		gbc_lblGekommen.insets = new Insets(0, 0, 5, 5);
-		gbc_lblGekommen.gridx = 0;
-		gbc_lblGekommen.gridy = 2;
-		add(lblWage, gbc_lblGekommen);
+		wageField = createInputLabelField("Stundenlohn:", 2);
+		pinField = createInputLabelField("Geburtsjahr:", 3);
 
-		wageField = new JTextField();
-		wageField.setFont(new Font("Tahoma", Font.BOLD, 18));
-		GridBagConstraints gbcWageField = new GridBagConstraints();
-		gbcWageField.fill = GridBagConstraints.BOTH;
-		gbcWageField.insets = new Insets(0, 0, 5, 0);
-		gbcWageField.gridwidth = GridBagConstraints.REMAINDER;
-		gbcWageField.gridx = 1;
-		gbcWageField.gridy = 2;
-		add(wageField, gbcWageField);
-
-		saveButton = createButton("Speichern", 0, 3);
+		saveButton = createButton("Speichern", 0, 4);
 		saveButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -128,7 +113,7 @@ public class EmployeeListView extends JPanel {
 			}
 		});
 
-		deleteButton = createButton("Löschen", 1, 3);
+		deleteButton = createButton("Löschen", 1, 4);
 		deleteButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -138,7 +123,7 @@ public class EmployeeListView extends JPanel {
 
 		});
 
-		newEmployeeButton = createButton("Neuer Mitarbeiter", 2, 3);
+		newEmployeeButton = createButton("Neuer Mitarbeiter", 2, 4);
 		newEmployeeButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -147,6 +132,28 @@ public class EmployeeListView extends JPanel {
 
 			}
 		});
+	}
+
+	private JTextField createInputLabelField(String labelText, int row) {
+		JLabel label = new JLabel(labelText);
+		label.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		GridBagConstraints gbcLabel = new GridBagConstraints();
+		gbcLabel.fill = GridBagConstraints.BOTH;
+		gbcLabel.insets = new Insets(0, 0, 5, 5);
+		gbcLabel.gridx = 0;
+		gbcLabel.gridy = row;
+		add(label, gbcLabel);
+
+		JTextField textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.BOLD, 18));
+		GridBagConstraints gbcTextField = new GridBagConstraints();
+		gbcTextField.fill = GridBagConstraints.BOTH;
+		gbcTextField.insets = new Insets(0, 0, 5, 0);
+		gbcTextField.gridwidth = GridBagConstraints.REMAINDER;
+		gbcTextField.gridx = 1;
+		gbcTextField.gridy = row;
+		add(textField, gbcTextField);
+		return textField;
 	}
 
 	protected void newEmployee() {
@@ -195,6 +202,7 @@ public class EmployeeListView extends JPanel {
 		this.selectedEmployee = selectedEmployee;
 		nameField.setText(selectedEmployee.getName());
 		wageField.setText(df.format(selectedEmployee.getWageRate()));
+		pinField.setText(selectedEmployee.getPin());
 	}
 
 	public void setModelData() throws ParseException {
@@ -205,6 +213,7 @@ public class EmployeeListView extends JPanel {
 			throw new ParseException("Mitarbeitername darf nicht leer sein.", 0);
 		}
 		selectedEmployee.setWageRate(df.parse(wageField.getText()).doubleValue());
+		selectedEmployee.setPin(pinField.getText());
 	}
 
 	private void saveEmployee() {
@@ -228,6 +237,7 @@ public class EmployeeListView extends JPanel {
 		selectedEmployee = new Employee("", 0);
 		nameField.setText("");
 		wageField.setText("");
+		pinField.setText("");
 	}
 
 	private void deleteEmployee() {

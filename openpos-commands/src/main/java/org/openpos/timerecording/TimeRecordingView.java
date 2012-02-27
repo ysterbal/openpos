@@ -22,7 +22,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
 
+import org.openpos.CancelException;
 import org.openpos.OpenPos;
+import org.openpos.OpenPosException;
 import org.openpos.print.ReportPrintService;
 import org.openpos.reports.closemonth.EmptyListDataListener;
 import org.openpos.timerecording.DateSelectorComponent.DateChangedListener;
@@ -31,7 +33,9 @@ import org.openpos.ui.components.TimeKeeper;
 import org.openpos.ui.components.TimeSelectorComponent;
 import org.openpos.ui.components.TimeSelectorComponent.TimeChangedListener;
 import org.openpos.utils.DateTimeUtils;
+import org.springframework.util.StringUtils;
 
+import com.openbravo.beans.JPasswordDialog;
 import com.openbravo.data.gui.MessageInf;
 
 public class TimeRecordingView extends JPanel implements TimeChangedListener, DateChangedListener {
@@ -178,7 +182,15 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printAndSave();
+				try {
+					printAndSave();
+				}
+				catch (CancelException cancelException) {
+				}
+				catch (OpenPosException ope) {
+					MessageInf msg = new MessageInf(MessageInf.CLS_GENERIC, ope.getMessage());
+					msg.show(TimeRecordingView.this);
+				}
 			}
 		});
 		printAndSaveButton.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -304,28 +316,45 @@ public class TimeRecordingView extends JPanel implements TimeChangedListener, Da
 
 	private void printAndSave() {
 		if (timeRecordingModel.isValid()) {
-			updateEarnings();
-			if (previousEntryExists()) {
-				int result = JOptionPane.showConfirmDialog(this,
-						"Es existieren bereits Zeiterfassungsdaten für diesen Tag.\n"
-								+ "Sollen die vorherigen Daten überschieben werden?", "Zeiterfassung",
-						JOptionPane.OK_CANCEL_OPTION);
 
-				if (result == JOptionPane.CANCEL_OPTION)
-					return;
-				updateTimeRecording();
+			String pin = JPasswordDialog.showEditPassword(this, "PIN", "Bitte Geburtsjahr zur Bestätigung eingeben",
+					null, true);
+
+			if (!StringUtils.hasText(pin))
+				throw new CancelException();
+
+			if (pin.equals(selectedEmployee.getPin())) {
+				updateEarnings();
+				if (previousEntryExists()) {
+					int result = JOptionPane.showConfirmDialog(this,
+							"Es existieren bereits Zeiterfassungsdaten für diesen Tag.\n"
+									+ "Sollen die vorherigen Daten überschrieben werden?", "Zeiterfassung",
+							JOptionPane.OK_CANCEL_OPTION);
+
+					if (result == JOptionPane.OK_OPTION) {
+						updateTimeRecording();
+					}
+					else
+						throw new CancelException();
+				}
+				else {
+					saveTimeRecording();
+				}
+				printReport();
 			}
 			else {
-				saveTimeRecording();
+				throw new OpenPosException("Die Pin ist nicht korrekt (" + pin + ").");
 			}
-			Map<String, Object> env = new HashMap<String, Object>();
-			env.put("trm", new TimeRecordingModelFormatter().formatModel(timeRecordingModel));
-			reportPrintService.print(env);
 		}
 		else {
-			MessageInf msg = new MessageInf(MessageInf.CLS_GENERIC, "Daten unvollständig");
-			msg.show(this);
+			throw new OpenPosException("Daten unvollständig");
 		}
+	}
+
+	private void printReport() {
+		Map<String, Object> env = new HashMap<String, Object>();
+		env.put("trm", new TimeRecordingModelFormatter().formatModel(timeRecordingModel));
+		reportPrintService.print(env);
 	}
 
 	private void updateEarnings() {

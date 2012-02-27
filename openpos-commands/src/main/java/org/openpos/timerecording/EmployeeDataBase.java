@@ -16,8 +16,13 @@ public class EmployeeDataBase {
 		return employees;
 	}
 
+	public void addEmployee(String name, double wageRate, String pin) {
+		employees.add(new Employee(name, wageRate, pin));
+	}
+
+	@Deprecated
 	public void addEmployee(String name, double wageRate) {
-		employees.add(new Employee(name, wageRate));
+		employees.add(new Employee(name, wageRate, ""));
 	}
 
 	public void addOrUpdateEmployee(Employee employee) {
@@ -59,7 +64,7 @@ public class EmployeeDataBase {
 		StringBuilder sb = new StringBuilder();
 		for (Employee employee : employees) {
 			sb.append("edb.addEmployee(\"").append(employee.getName()).append("\",").append(employee.getWageRate())
-					.append(");\n");
+					.append(",\"").append(employee.getPin()).append("\");\n");
 		}
 		return sb.toString();
 	}

@@ -46,7 +46,7 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
         initComponents();    
     }
     
-    public void initFrame(AppProperties props) {
+    public AppView initFrame(AppProperties props) {
         
         m_props = props;
         
@@ -78,6 +78,7 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
         } else {
             new JFrmConfig(props).setVisible(true); // Show the configuration window.
         }
+        return m_rootapp;
     }
     
     public void restoreWindow() throws RemoteException {

@@ -31,8 +31,8 @@ public class ReportPrintService {
 			for (Entry<String, Object> entry : environment.entrySet()) {
 				scriptEngine.put(entry.getKey(), entry.getValue());
 			}
-
-			ticketParser.printTicket(scriptEngine.eval(scriptResource).toString());
+			String evaluatedReport = scriptEngine.eval(scriptResource).toString();
+			ticketParser.printTicket(evaluatedReport);
 		}
 		catch (ScriptException e) {
 			MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"),
@@ -44,6 +44,5 @@ public class ReportPrintService {
 					e);
 			msg.show(component);
 		}
-
 	}
 }

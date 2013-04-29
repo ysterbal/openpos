@@ -19,30 +19,40 @@
 
 package com.openbravo.pos.panels;
 
-import com.openbravo.pos.forms.JPanelView;
-import com.openbravo.pos.forms.AppView;
-import com.openbravo.pos.forms.AppLocal;
-import java.awt.*;
+import java.awt.Dimension;
 import java.text.ParseException;
-import javax.swing.*;
 import java.util.Date;
 import java.util.UUID;
-import javax.swing.table.*;
-import com.openbravo.data.loader.StaticSentence;
-import com.openbravo.data.loader.SerializerWriteBasic;
-import com.openbravo.format.Formats;
+
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+
+import org.openpos.OpenPos;
+import org.openpos.reports.IReportsPublishService;
+
 import com.openbravo.basic.BasicException;
-import com.openbravo.data.loader.Datas;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.TableRendererBasic;
+import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.SerializerWriteBasic;
+import com.openbravo.data.loader.StaticSentence;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.printer.TicketParser;
+import com.openbravo.pos.printer.TicketPrinterException;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
-import com.openbravo.pos.forms.DataLogicSystem;
-import com.openbravo.pos.printer.TicketParser;
-import com.openbravo.pos.printer.TicketPrinterException;
 
 /**
  *
@@ -175,7 +185,11 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 script.put("payments", m_PaymentsToClose);
-                m_TTP.printTicket(script.eval(sresource).toString());
+                String evaluatedReport = script.eval(sresource).toString();
+                m_TTP.printTicket(evaluatedReport);
+                IReportsPublishService reportsPublishService = OpenPos.getApplicationContext().getBean(IReportsPublishService.class);
+                reportsPublishService.sendDayEndReport(evaluatedReport);
+                
             } catch (ScriptException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(this);

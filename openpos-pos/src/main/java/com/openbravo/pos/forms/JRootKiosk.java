@@ -49,7 +49,7 @@ public class JRootKiosk extends javax.swing.JFrame implements AppMessage {
     }
     
     
-    public void initFrame(AppProperties props) {
+    public AppView initFrame(AppProperties props) {
         
         m_props = props;
         
@@ -76,7 +76,8 @@ public class JRootKiosk extends javax.swing.JFrame implements AppMessage {
             setVisible(true);                        
         } else {
             new JFrmConfig(props).setVisible(true); // Show the configuration window.
-        }        
+        }
+        return m_rootapp;
     }
     
     public void restoreWindow() throws RemoteException {

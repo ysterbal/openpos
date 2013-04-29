@@ -44,5 +44,4 @@ public class TimeRecordingSelect extends MappingSqlQuery<TimeRecordingModel> {
 	public List<TimeRecordingModel> findTimeRecording(String employeeName, Date fromDate, Date toDate) {
 		return execute(employeeName, fromDate, toDate);
 	}
-
 }

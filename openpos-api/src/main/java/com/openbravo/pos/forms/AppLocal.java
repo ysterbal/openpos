@@ -16,7 +16,6 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-
 package com.openbravo.pos.forms;
 
 import com.openbravo.beans.LocaleResources;
@@ -30,11 +29,9 @@ public class AppLocal {
 	public static final String APP_NAME = "Openbravo POS";
 	public static final String APP_ID = "openbravopos";
 	public static final String APP_VERSION = "2.30.2";
-	public static final String DB_VERSION = "2.40.0";
-
+	public static final String DB_VERSION = "2.40.1";
 	// private static List<ResourceBundle> m_messages;
 	private static LocaleResources m_resources;
-
 	static {
 		m_resources = new LocaleResources();
 		m_resources.addBundleName("pos_messages");

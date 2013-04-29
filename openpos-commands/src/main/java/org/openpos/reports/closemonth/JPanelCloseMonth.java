@@ -16,7 +16,6 @@
 //
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-
 package org.openpos.reports.closemonth;
 
 import java.awt.Dimension;
@@ -57,29 +56,24 @@ import com.openbravo.pos.scripting.ScriptFactory;
 public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryApp {
 
 	private static final int BASE_YEAR = 2008;
-	private static final String PRINTER_MONTHLY_REPORT = "Printer.MonthlyReport";
+	public static final String PRINTER_MONTHLY_REPORT = "Printer.MonthlyReport";
 	private AppView m_App;
 	private DataLogicSystem m_dlSystem;
-
 	private PaymentsModel m_PaymentsToClose = PaymentsModel.emptyInstance();
-
 	private TicketParser m_TTP;
 	private int currentMonth;
 	private int currentYear;
 
 	/** Creates new form JPanelCloseMoney */
 	public JPanelCloseMonth() {
-
 		initComponents();
 	}
 
 	@Override
 	public void init(AppView app) throws BeanFactoryException {
-
 		m_App = app;
 		m_dlSystem = (DataLogicSystem)m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
 		m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
-
 		m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(new Formats[] { new FormatsPayment(),
 				Formats.CURRENCY }));
 		m_jTicketTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -87,7 +81,6 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 		m_jTicketTable.getTableHeader().setReorderingAllowed(false);
 		m_jTicketTable.setRowHeight(25);
 		m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
 		m_jsalestable.setDefaultRenderer(Object.class, new TableRendererBasic(new Formats[] { Formats.STRING,
 				Formats.CURRENCY, Formats.CURRENCY, Formats.CURRENCY }));
 		m_jsalestable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -124,49 +117,37 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 	}
 
 	private void loadData() throws BasicException {
-
 		// Reset
 		m_jMinDate.setText(null);
 		m_jMaxDate.setText(null);
 		m_jPrintCash.setEnabled(false);
 		m_jCount.setText(null); // AppLocal.getIntString("label.noticketstoclose");
 		m_jCash.setText(null);
-
 		m_jSales.setText(null);
 		m_jSalesSubtotal.setText(null);
 		m_jSalesTaxes.setText(null);
 		m_jSalesTotal.setText(null);
-
 		m_jTicketTable.setModel(new DefaultTableModel());
 		m_jsalestable.setModel(new DefaultTableModel());
-
 		// Populate Data
 		m_jMinDate.setText(m_PaymentsToClose.printDateStart());
 		m_jMaxDate.setText(m_PaymentsToClose.printDateEnd());
-
 		if (m_PaymentsToClose.getPayments() != 0 || m_PaymentsToClose.getSales() != 0) {
-
 			m_jPrintCash.setEnabled(true);
-
 			m_jCount.setText(m_PaymentsToClose.printPayments());
 			m_jCash.setText(m_PaymentsToClose.printPaymentsTotal());
-
 			m_jSales.setText(m_PaymentsToClose.printSales());
 			m_jSalesSubtotal.setText(m_PaymentsToClose.printSalesBase());
 			m_jSalesTaxes.setText(m_PaymentsToClose.printSalesTaxes());
 			m_jSalesTotal.setText(m_PaymentsToClose.printSalesTotal());
 		}
-
 		m_jTicketTable.setModel(m_PaymentsToClose.getPaymentsModel());
-
 		TableColumnModel jColumns = m_jTicketTable.getColumnModel();
 		jColumns.getColumn(0).setPreferredWidth(200);
 		jColumns.getColumn(0).setResizable(false);
 		jColumns.getColumn(1).setPreferredWidth(100);
 		jColumns.getColumn(1).setResizable(false);
-
 		m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
-
 		jColumns = m_jsalestable.getColumnModel();
 		jColumns.getColumn(0).setPreferredWidth(100);
 		jColumns.getColumn(0).setResizable(false);
@@ -177,7 +158,6 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 	}
 
 	private void printPayments(String report) {
-
 		String sresource = m_dlSystem.getResourceAsXML(report);
 		if (sresource == null) {
 			MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"));
@@ -187,7 +167,8 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 			try {
 				ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
 				script.put("payments", m_PaymentsToClose);
-				m_TTP.printTicket(script.eval(sresource).toString());
+				String evaluatedReport = script.eval(sresource).toString();
+				m_TTP.printTicket(evaluatedReport);
 			}
 			catch (ScriptException e) {
 				MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
@@ -226,7 +207,6 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 	 */
 	// <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
-
 		jPanel1 = new javax.swing.JPanel();
 		jPanel4 = new javax.swing.JPanel();
 		jLabel11 = new javax.swing.JLabel();
@@ -254,23 +234,15 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 		jLabel12 = new javax.swing.JLabel();
 		jLabel7 = new javax.swing.JLabel();
 		m_jPrintCash = new javax.swing.JButton();
-
 		setLayout(new java.awt.BorderLayout());
-
 		jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("label.datestitle"))); // NOI18N
-
 		jLabel11.setText(AppLocal.getIntString("label.sequence")); // NOI18N
-
 		jLabel2.setText(AppLocal.getIntString("Label.StartDate")); // NOI18N
-
 		m_jMinDate.setEditable(false);
 		m_jMinDate.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		jLabel3.setText(AppLocal.getIntString("Label.EndDate")); // NOI18N
-
 		m_jMaxDate.setEditable(false);
 		m_jMaxDate.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
 		jPanel4.setLayout(jPanel4Layout);
 		jPanel4Layout
@@ -351,28 +323,20 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE))
 								.addContainerGap(16, Short.MAX_VALUE)));
-
 		jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("label.paymentstitle"))); // NOI18N
-
 		m_jScrollTableTicket.setMinimumSize(new java.awt.Dimension(350, 140));
 		m_jScrollTableTicket.setPreferredSize(new java.awt.Dimension(350, 140));
-
 		m_jTicketTable.setFocusable(false);
 		m_jTicketTable.setIntercellSpacing(new java.awt.Dimension(0, 1));
 		m_jTicketTable.setRequestFocusEnabled(false);
 		m_jTicketTable.setShowVerticalLines(false);
 		m_jScrollTableTicket.setViewportView(m_jTicketTable);
-
 		jLabel1.setText(AppLocal.getIntString("Label.Tickets")); // NOI18N
-
 		m_jCount.setEditable(false);
 		m_jCount.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		jLabel4.setText(AppLocal.getIntString("Label.Cash")); // NOI18N
-
 		m_jCash.setEditable(false);
 		m_jCash.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
 		jPanel5.setLayout(jPanel5Layout);
 		jPanel5Layout
@@ -453,35 +417,24 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))))
 										.addContainerGap(16, Short.MAX_VALUE)));
-
 		jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("label.salestitle"))); // NOI18N
-
 		m_jSalesTotal.setEditable(false);
 		m_jSalesTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		m_jsalestable.setFocusable(false);
 		m_jsalestable.setIntercellSpacing(new java.awt.Dimension(0, 1));
 		m_jsalestable.setRequestFocusEnabled(false);
 		m_jsalestable.setShowVerticalLines(false);
 		m_jScrollSales.setViewportView(m_jsalestable);
-
 		m_jSalesTaxes.setEditable(false);
 		m_jSalesTaxes.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		m_jSalesSubtotal.setEditable(false);
 		m_jSalesSubtotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		m_jSales.setEditable(false);
 		m_jSales.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
 		jLabel5.setText(AppLocal.getIntString("label.sales")); // NOI18N
-
 		jLabel6.setText(AppLocal.getIntString("label.subtotalcash")); // NOI18N
-
 		jLabel12.setText(AppLocal.getIntString("label.taxcash")); // NOI18N
-
 		jLabel7.setText(AppLocal.getIntString("label.totalcash")); // NOI18N
-
 		javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
 		jPanel6.setLayout(jPanel6Layout);
 		jPanel6Layout
@@ -612,7 +565,6 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))))
 										.addContainerGap(16, Short.MAX_VALUE)));
-
 		m_jPrintCash.setText(AppLocal.getIntString("Button.PrintMonthlyReport")); // NOI18N
 		m_jPrintCash.addActionListener(new java.awt.event.ActionListener() {
 
@@ -621,9 +573,7 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 				m_jPrintCashActionPerformed(evt);
 			}
 		});
-
 		JButton changeMonthButton = createChangeMonthButton();
-
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
 		jPanel1Layout
@@ -670,15 +620,12 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 										jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
 												.addComponent(changeMonthButton).addComponent(m_jPrintCash))
 								.addContainerGap()));
-
 		add(jPanel1, java.awt.BorderLayout.CENTER);
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
-
 		// print report
 		printPayments(PRINTER_MONTHLY_REPORT); // Printer.CloseCash
-
 	}//GEN-LAST:event_m_jPrintCashActionPerformed
 
 	private JButton createChangeMonthButton() {
@@ -696,31 +643,25 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 				catch (BasicException e) {
 					throw new RuntimeException(e);
 				}
-
 			}
 		});
 		return button;
 	}
 
 	private JPanel createMonthSelection() {
-
 		Calendar c = Calendar.getInstance();
 		currentMonth = c.get(Calendar.MONTH);
 		currentYear = c.get(Calendar.YEAR);
-
 		JComboBox monthSelection = createMonthComboBox();
 		JComboBox yearSelection = createYearComboBox();
-
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panel.add(monthSelection);
 		panel.add(yearSelection);
-
 		return panel;
 	}
 
 	private JComboBox createYearComboBox() {
 		final String[] years = DateTimeUtils.createYearsArray(BASE_YEAR);
-
 		JComboBox yearSelection = new JComboBox(years);
 		yearSelection.setSelectedIndex(currentYear - BASE_YEAR);
 		yearSelection.getModel().addListDataListener(new EmptyListDataListener() {
@@ -733,14 +674,12 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 						currentYear = BASE_YEAR + year;
 				}
 			}
-
 		});
 		return yearSelection;
 	}
 
 	private JComboBox createMonthComboBox() {
 		final String[] months = DateTimeUtils.createMonthArray();
-
 		JComboBox monthSelection = new JComboBox(months);
 		monthSelection.setSelectedIndex(currentMonth);
 		monthSelection.getModel().addListDataListener(new EmptyListDataListener() {
@@ -786,5 +725,4 @@ public class JPanelCloseMonth extends JPanel implements JPanelView, BeanFactoryA
 	private javax.swing.JTable m_jTicketTable;
 	private javax.swing.JTable m_jsalestable;
 	// End of variables declaration//GEN-END:variables
-
 }

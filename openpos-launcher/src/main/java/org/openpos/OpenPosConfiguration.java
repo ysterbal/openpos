@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
@@ -27,7 +29,6 @@ public class OpenPosConfiguration {
 		}
 		else
 			propertiesFile = new File(locationProperty);
-
 		log.info("Loading properties from [" + propertiesFile.getAbsolutePath() + "]");
 		config = new AppConfig(propertiesFile);
 		config.load();
@@ -36,6 +37,17 @@ public class OpenPosConfiguration {
 	@Bean
 	public AppConfig getAppConfig() {
 		return config;
+	}
+
+	@Bean
+	public MailSender mailSender(AppConfig appConfig) {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		if (appConfig.getProperty("mail.sendreports").equalsIgnoreCase("true")) {
+			mailSender.setHost(appConfig.getProperty("mail.smtp"));
+			mailSender.setUsername(appConfig.getProperty("mail.user"));
+			mailSender.setPassword(appConfig.getProperty("mail.password"));
+		}
+		return mailSender;
 	}
 
 	@Bean

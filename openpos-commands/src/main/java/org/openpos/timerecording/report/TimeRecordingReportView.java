@@ -6,26 +6,18 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.openpos.OpenPos;
 import org.openpos.print.ReportPrintService;
 import org.openpos.timerecording.Employee;
-import org.openpos.timerecording.FormattedTimeRecordingModel;
-import org.openpos.timerecording.TimeRecordingModel;
-import org.openpos.timerecording.TimeRecordingModelFormatter;
-import org.openpos.timerecording.dao.TimeRecordingSelect;
 import org.openpos.utils.DateTimeUtils;
 
 import com.openbravo.data.gui.MessageInf;
@@ -45,7 +37,6 @@ public class TimeRecordingReportView extends JPanel {
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-
 		JLabel lblMonth = new JLabel("Monat:");
 		lblMonth.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GridBagConstraints gbc_lblMonth = new GridBagConstraints();
@@ -54,7 +45,6 @@ public class TimeRecordingReportView extends JPanel {
 		gbc_lblMonth.gridx = 0;
 		gbc_lblMonth.gridy = 0;
 		add(lblMonth, gbc_lblMonth);
-
 		monthSelector = new JComboBox(DateTimeUtils.createMonthArray());
 		monthSelector.setFont(new Font("Tahoma", Font.BOLD, 18));
 		GridBagConstraints gbc_monthSelector = new GridBagConstraints();
@@ -63,7 +53,6 @@ public class TimeRecordingReportView extends JPanel {
 		gbc_monthSelector.gridx = 1;
 		gbc_monthSelector.gridy = 0;
 		add(monthSelector, gbc_monthSelector);
-
 		yearSelector = new JComboBox(years);
 		yearSelector.setFont(new Font("Tahoma", Font.BOLD, 18));
 		GridBagConstraints gbc_yearSelector = new GridBagConstraints();
@@ -72,14 +61,12 @@ public class TimeRecordingReportView extends JPanel {
 		gbc_yearSelector.gridx = 2;
 		gbc_yearSelector.gridy = 0;
 		add(yearSelector, gbc_yearSelector);
-
 		JButton btnPrint = new JButton("Drucken");
 		btnPrint.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				printReport();
-
 			}
 		});
 		btnPrint.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -89,7 +76,6 @@ public class TimeRecordingReportView extends JPanel {
 		gbc_btnPrint.gridx = 1;
 		gbc_btnPrint.gridy = 1;
 		add(btnPrint, gbc_btnPrint);
-
 		updateDate();
 	}
 
@@ -109,59 +95,19 @@ public class TimeRecordingReportView extends JPanel {
 	}
 
 	private void printReport() {
-		int month = monthSelector.getSelectedIndex();
-		int year = Integer.parseInt((String)yearSelector.getSelectedItem());
-		Calendar fromDate = Calendar.getInstance();
-		fromDate.set(year, month, 1);
-		Calendar toDate = (Calendar)fromDate.clone();
-		toDate.add(Calendar.MONTH, 1);
-		toDate.add(Calendar.DAY_OF_YEAR, -1);
-		TimeRecordingModelFormatter formatter = new TimeRecordingModelFormatter();
-		Map<String, List<TimeRecordingModel>> data = collectData(fromDate, toDate);
-		for (Entry<String, List<TimeRecordingModel>> entry : data.entrySet()) {
-
-			TimeRecordingReportModel reportModel = new TimeRecordingReportModel();
-			reportModel.setEmployeeName(entry.getKey());
-			reportModel.setFromDate(formatter.formatCalendar(fromDate));
-			reportModel.setToDate(formatter.formatCalendar(toDate));
-
-			List<FormattedTimeRecordingModel> entries = new ArrayList<FormattedTimeRecordingModel>();
-			int totalWorkingTime = 0;
-			int totalEarningsInCent = 0;
-			for (TimeRecordingModel model : entry.getValue()) {
-				entries.add(formatter.formatModel(model));
-				totalWorkingTime += model.getWorkingTime();
-				totalEarningsInCent += model.getEarningsInCents();
-			}
-			reportModel.setEntries(entries);
-			reportModel.setTotalWorkingTime(DateTimeUtils.formatTime(totalWorkingTime));
-			reportModel.setTotalEarnings(formatter.formatEarningsInCents(totalEarningsInCent));
-
+		TimeRecordingReportCreator creator = new TimeRecordingReportCreator(employees);
+		List<TimeRecordingReportModel> reports = creator.createReports(monthSelector.getSelectedIndex(),
+				Integer.parseInt((String)yearSelector.getSelectedItem()));
+		for (TimeRecordingReportModel report : reports) {
 			Map<String, Object> env = new HashMap<String, Object>();
-			env.put("report", reportModel);
+			env.put("report", report);
 			reportPrintService.print(env);
 		}
 		MessageInf msg = new MessageInf(MessageInf.SGN_SUCCESS, "OK");
 		msg.show(this);
-
-	}
-
-	private Map<String, List<TimeRecordingModel>> collectData(Calendar fromDate, Calendar toDate) {
-		Map<String, List<TimeRecordingModel>> result = new LinkedHashMap<String, List<TimeRecordingModel>>();
-		TimeRecordingSelect timeRecordingSelect = OpenPos.getApplicationContext().getBean(TimeRecordingSelect.class);
-
-		for (Employee employee : employees) {
-			List<TimeRecordingModel> list = timeRecordingSelect.findTimeRecording(employee.getName(),
-					fromDate.getTime(), toDate.getTime());
-			if (!list.isEmpty()) {
-				result.put(employee.getName(), list);
-			}
-		}
-		return result;
 	}
 
 	public void setEmployees(List<Employee> employees) {
 		this.employees = employees;
 	}
-
 }

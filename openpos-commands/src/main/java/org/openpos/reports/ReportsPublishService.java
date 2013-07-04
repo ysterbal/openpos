@@ -1,5 +1,7 @@
 package org.openpos.reports;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +31,11 @@ public class ReportsPublishService implements IReportsPublishService {
 			@Override
 			public void run() {
 				String message = convertToMessage(evaluatedReport);
+				File file = new File("C:\\");
+				long freeSpace = file.getFreeSpace();
+				DecimalFormat df = new DecimalFormat("#,##0.00");
+				String freeSpaceMessage = "\n\nFreier Speicherplatz: " + df.format((double)freeSpace / 1024) + " KB";
+				message += freeSpaceMessage;
 				SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 				sendMessage("Tagesabschluss " + sdf.format(new Date()), message);
 			}

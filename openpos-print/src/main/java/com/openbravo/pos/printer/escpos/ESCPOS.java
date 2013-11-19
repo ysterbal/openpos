@@ -21,6 +21,9 @@ package com.openbravo.pos.printer.escpos;
 
 public class ESCPOS {
 
+	public static final byte ESC = 0x1b;
+	public static final byte GS = 0x1d;
+	
     public static final byte[] INIT = {0x1B, 0x40};
         
     public static final byte[] SELECT_PRINTER = {0x1B, 0x3D, 0x01};
@@ -35,6 +38,8 @@ public class ESCPOS {
     public static final byte[] CHAR_FONT_1 = {0x1B, 0x4D, 0x01};
     public static final byte[] CHAR_FONT_2 = {0x1B, 0x4D, 0x30};
     public static final byte[] CHAR_FONT_3 = {0x1B, 0x4D, 0x31};
+
+    public static final byte[] CENTER = {ESC, 'a', 1};
         
     public static final byte[] BAR_HEIGHT = {0x1D, 0x68, 0x40};
     public static final byte[] BAR_POSITIONDOWN = {0x1D, 0x48, 0x02};

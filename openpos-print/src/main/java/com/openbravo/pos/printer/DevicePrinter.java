@@ -37,6 +37,7 @@ public interface DevicePrinter {
     public static final int ALIGN_RIGHT = 1;
     public static final int ALIGN_CENTER = 2;
     
+    public static final String QRCODE = "QRC";
     public static final String BARCODE_EAN13 = "EAN13";
     public static final String BARCODE_CODE128 = "CODE128";
     

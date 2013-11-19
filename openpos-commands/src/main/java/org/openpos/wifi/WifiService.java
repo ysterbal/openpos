@@ -1,37 +1,68 @@
 package org.openpos.wifi;
 
-import javax.annotation.PostConstruct;
+import java.util.Calendar;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.openbravo.pos.forms.AppView;
+
+import de.grundid.fritz.FritzTemplate;
 
 @Service
 public class WifiService {
 
-	@Autowired
+	private Logger log = Logger.getLogger(WifiService.class.getName());
 	private WifiResources wifiResources;
 
-	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
-		if (wifiResources.hasWifiKey()) {
-			long now = System.currentTimeMillis();
-			long lastModified = wifiResources.getLastModified();
-			double lastModifiedDays = ((double)(now - lastModified)) / (1000 * 60 * 60 * 24);
-			if (lastModifiedDays > 6) {
-				updateWifi();
+	public void initAppView(AppView appView) {
+		wifiResources = new WifiResources(appView);
+		afterPropertiesSet();
+	}
+
+	public void afterPropertiesSet() {
+		try {
+			if (wifiResources.hasWifiKey()) {
+				Calendar c = Calendar.getInstance();
+				int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+				long now = c.getTimeInMillis();
+				long lastModified = wifiResources.getLastModified();
+				double lastModifiedHours = ((double)(now - lastModified)) / (1000 * 60 * 60);
+				if (lastModifiedHours > 24 && dayOfWeek == Calendar.WEDNESDAY) {
+					updateWifi();
+				}
+				else
+					activateWifi(wifiResources.getWifiKey());
 			}
+			else
+				updateWifi();
 		}
-		else
-			updateWifi();
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void updateWifi() {
-		wifiResources.setWifiKey(generateNewWpaKey());
+		log.info("Updating Wifi...");
+		String newWifiKey = generateNewWifiKey();
+		activateWifi(newWifiKey);
+		wifiResources.setWifiKey(newWifiKey);
 		wifiResources.setLastModified(System.currentTimeMillis());
 	}
 
-	public String generateNewWpaKey() {
-		return RandomStringUtils.random(12);
+	private void activateWifi(String wifiKey) {
+		log.info("Activating Wifi...");
+		FritzTemplate fritzTemplate = new FritzTemplate(new RestTemplate(), wifiResources.getFritzPasswort());
+		fritzTemplate.activateGuestAccess(wifiResources.getSsid(), wifiKey);
+	}
+
+	public String generateNewWifiKey() {
+		return RandomStringUtils.randomAlphanumeric(8);
+	}
+
+	public void printCurrentWifiPassword() {
+		wifiResources.printWifiReceipt();
 	}
 }

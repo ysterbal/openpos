@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.openpos.commands.ExecCommands.Command;
+import org.openpos.wifi.WifiReceiptCommand;
 
 /**
  * @author adrian
@@ -27,14 +28,12 @@ public class CommandPosUtils {
 
 	public static JButton createButton(String titleKey, ActionListener actionListener) {
 		JButton button = new JButton();
-
 		button.setText(getResource(titleKey));
 		button.setFocusPainted(false);
 		button.setFocusable(false);
 		button.setMargin(new java.awt.Insets(8, 14, 8, 14));
 		button.setRequestFocusEnabled(false);
 		button.addActionListener(actionListener);
-
 		return button;
 	}
 
@@ -47,5 +46,6 @@ public class CommandPosUtils {
 		panel.add(CommandPosUtils.createButton("sound.special2",
 				ExecCommands.createActionListener(Command.MUSIC_SPECIAL2)));
 		panel.add(CommandPosUtils.createButton("sound.stop", ExecCommands.createActionListener(Command.MUSIC_STOP)));
+		panel.add(CommandPosUtils.createButton("wifi.receipt", new WifiReceiptCommand()));
 	}
 }

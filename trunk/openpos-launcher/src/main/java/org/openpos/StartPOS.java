@@ -11,6 +11,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
 import org.openpos.reports.email.MonthyReports;
 import org.openpos.utils.LegacyFactory;
+import org.openpos.wifi.WifiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,8 @@ public class StartPOS implements Runnable {
 	private LegacyFactory legacyFactory;
 	@Autowired
 	private MonthyReports monthyReports;
+	@Autowired
+	private WifiService wifiService;
 
 	public StartPOS() {
 	}
@@ -92,5 +95,6 @@ public class StartPOS implements Runnable {
 		}
 		legacyFactory.initAppView(appView);
 		monthyReports.startReporting();
+		wifiService.initAppView(appView);
 	}
 }

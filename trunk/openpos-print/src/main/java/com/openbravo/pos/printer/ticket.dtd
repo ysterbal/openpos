@@ -37,7 +37,7 @@
 <!ELEMENT image (#PCDATA)>
 
 <!ELEMENT barcode (#PCDATA)>
-<!ATTLIST barcode type (EAN13 | CODE128) "EAN13">
+<!ATTLIST barcode type (EAN13 | CODE128 | QRC) "EAN13">
 
 <!ELEMENT display (line)*>
 <!ATTLIST display animation (scroll | flyer | blink | curtain | none) "none">

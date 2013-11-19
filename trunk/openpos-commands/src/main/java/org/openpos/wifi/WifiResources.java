@@ -1,21 +1,37 @@
 package org.openpos.wifi;
 
-import org.openpos.utils.LegacyFactory;
 import org.openpos.utils.ResourcesHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
+import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.printer.TicketParser;
+import com.openbravo.pos.scripting.ScriptEngine;
+import com.openbravo.pos.scripting.ScriptFactory;
+
 public class WifiResources extends ResourcesHandler {
 
 	private static final String WIFI_KEY = "Wifi.Key";
+	private static final String WIFI_SSID = "Wifi.Ssid";
 	private static final String WIFI_LAST_MODIFIED = "Wifi.LastModified";
 	private static final String WIFI_PROMOTION = "Wifi.Promotion";
-	private static final String WIFI_FB = "Wifi.Fb";
+	private static final String WIFI_RECEIPT = "Wifi.Receipt";
+	private static final String FRITZ_PASSWORT = "Fritz.Passwort";
+	private TicketParser ticketParser;
 
-	@Autowired
-	public WifiResources(LegacyFactory legacyFactory) {
-		super(legacyFactory.getAppView());
+	public WifiResources(AppView appView) {
+		super(appView);
+		ticketParser = new TicketParser(appView.getDeviceTicket(), dataLogicSystem);
+	}
+
+	public void printWifiReceipt() {
+		try {
+			ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+			script.put("wifi", new WifiConfig(getSsid(), getWifiKey(), getPromotion()));
+			String evaluatedReceipt = script.eval(getResourceAsString(WIFI_RECEIPT)).toString();
+			ticketParser.printTicket(evaluatedReceipt);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean hasWifiKey() {
@@ -24,6 +40,14 @@ public class WifiResources extends ResourcesHandler {
 
 	public String getWifiKey() {
 		return getResourceAsString(WIFI_KEY);
+	}
+
+	public String getPromotion() {
+		return getResourceAsString(WIFI_PROMOTION);
+	}
+
+	public String getSsid() {
+		return getResourceAsString(WIFI_SSID);
 	}
 
 	public void setWifiKey(String key) {
@@ -37,5 +61,9 @@ public class WifiResources extends ResourcesHandler {
 
 	public void setLastModified(long time) {
 		setResourceAsString(WIFI_LAST_MODIFIED, String.valueOf(time));
+	}
+
+	public String getFritzPasswort() {
+		return getResourceAsString(FRITZ_PASSWORT);
 	}
 }
